@@ -469,19 +469,7 @@ extension Sourcery {
             try self.output(result: result.contents, to: outputPath)
             Log.info("\(outputPath)")
 
-            if let linkTo = 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            .linkTo {
+            if let linkTo = output.linkTo {
                 linkTo.targets.forEach { target in
                     link(output.path, to: linkTo, target: target)
                 }

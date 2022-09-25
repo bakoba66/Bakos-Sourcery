@@ -84,6 +84,10 @@ public class Sourcery {
             switch source {
             case let .sources(paths):
                 result = try self.parse(from: paths.include, exclude: paths.exclude, forceParse: forceParse, parseDocumentation: parseDocumentation, modules: nil, requiresFileParserCopy: hasSwiftTemplates)
+                for (from, exclude) in zip(paths.include, paths.exclude) {
+                    result = try self.parse(from: [from], exclude: [exclude], forceParse: forceParse, parseDocumentation: parseDocumentation, modules: nil, requiresFileParserCopy: hasSwiftTemplates)
+                    try self.generate(source: source, templatePaths: templatesPaths, output: output, parsingResult: &result, forceParse: forceParse)
+                }
             case let .projects(projects):
                 var paths: [Path] = []
                 var modules = [String]()
@@ -103,10 +107,15 @@ public class Sourcery {
                         }
                     }
                 }
+                for path in paths {
+                    result = try self.parse(from: [path], forceParse: forceParse, parseDocumentation: parseDocumentation, modules: modules, requiresFileParserCopy: hasSwiftTemplates)
+                    try self.generate(source: source, templatePaths: templatesPaths, output: output, parsingResult: &result, forceParse: forceParse)
+                }
+
                 result = try self.parse(from: paths, forceParse: forceParse, parseDocumentation: parseDocumentation, modules: modules, requiresFileParserCopy: hasSwiftTemplates)
+                
             }
 
-            try self.generate(source: source, templatePaths: templatesPaths, output: output, parsingResult: &result, forceParse: forceParse)
             return result
         }
 
@@ -433,7 +442,7 @@ extension Sourcery {
             try allTemplates.forEach { template in
                 let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, outputPath: output.path, forceParse: forceParse)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                let outputPath = output.path + generatedPath(for: template.sourcePath)
+                let outputPath = output.path + generatedPath(type: parsingResult.types)
                 try self.output(result: result, to: outputPath)
 
                 if let linkTo = output.linkTo {
@@ -451,7 +460,8 @@ extension Sourcery {
                 return (result, parsingResult)
             }
             parsingResult = result.parsingResult
-            try self.output(result: result.contents, to: output.path)
+            let outputPath = output.path + generatedPath(type: parsingResult.types)
+            try self.output(result: result.contents, to: outputPath)
 
             if let linkTo = output.linkTo {
                 linkTo.targets.forEach { target in
@@ -737,5 +747,9 @@ extension Sourcery {
 
     internal func generatedPath(`for` templatePath: Path) -> Path {
         return Path("\(templatePath.lastComponentWithoutExtension).generated.swift")
+    }
+
+    internal func generatedPath(type: Types) -> Path {
+        return Path("\(type.types.first)Mock.swift")
     }
 }

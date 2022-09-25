@@ -67,14 +67,17 @@ public class Sourcery {
     public func processFiles(_ source: Source, usingTemplates templatesPaths: Paths, output: Output, forceParse: [String] = [], parseDocumentation: Bool = false) throws -> [FolderWatcher.Local]? {
         self.templatesPaths = templatesPaths
         self.outputPath = output
+        Log.info("\(output)")
 
         let hasSwiftTemplates = templatesPaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
 
         let watchPaths: Paths
         switch source {
         case let .sources(paths):
+        Log.info("\(paths)")
             watchPaths = paths
         case let .projects(projects):
+            Log.info("\(projects)")
             watchPaths = Paths(include: projects.map({ $0.root }),
                                exclude: projects.flatMap({ $0.exclude }))
         }
@@ -436,6 +439,8 @@ extension Sourcery {
         Log.benchmark("\tLoading took \(currentTimestamp() - generationStart)")
 
         Log.info("Generating code...")
+        Log.info("Bako Abdullah")
+        Log.info("\(output.isDirectory)")
         status = ""
 
         if output.isDirectory {
@@ -464,7 +469,19 @@ extension Sourcery {
             try self.output(result: result.contents, to: outputPath)
             Log.info("\(outputPath)")
 
-            if let linkTo = output.linkTo {
+            if let linkTo = 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            .linkTo {
                 linkTo.targets.forEach { target in
                     link(output.path, to: linkTo, target: target)
                 }

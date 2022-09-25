@@ -444,7 +444,7 @@ extension Sourcery {
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                 let outputPath = output.path + generatedPath(type: parsingResult.types)
                 try self.output(result: result, to: outputPath)
-
+                Log.info("\(outputPath)")
                 if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
                         link(outputPath, to: linkTo, target: target)
@@ -462,6 +462,7 @@ extension Sourcery {
             parsingResult = result.parsingResult
             let outputPath = output.path + generatedPath(type: parsingResult.types)
             try self.output(result: result.contents, to: outputPath)
+            Log.info("\(outputPath)")
 
             if let linkTo = output.linkTo {
                 linkTo.targets.forEach { target in
